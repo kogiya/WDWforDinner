@@ -13,140 +13,62 @@
 
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-</head>
+
+    <!-- CSS -->
+    <link href="css/main.css" rel="stylesheet">
 <body>
-
-    <h1 class="text-center">What do you want for dinner today?</h1>
-
-    <div class="text-center">
-        <button id="tellMe" class="btn-lg">Tell Me!</button>
-    </div>
-
-    <div id="answer" class="text-center">
-
-    </div>
-
-    <div class="row">
-        <div class="col-6 text-center">
-            <fieldset>
-                <legend>Add New Item</legend>
-                <input id = "newItem" type="text" placeholder="Add Item">
-                <button id="btnAdd" class="btn btn-primary">Add</button>
-                <div id="addAlert" class="alert alert-danger" role="alert">
-                    The item <span id="alertNewItem"></span> already exists in the list.
+    <div class="container">
+        <div class="text-center">
+            <div class="talk-bubble tri-right left-in round bounce">
+                <h1 class="text-center">What do you want for dinner today?</h1>
+            </div>
+        </div>
+        <div class="text-center">
+            <div class="talk-bubble tri-right round right-in horizontal">
+                <div id="answer" class="text-center">
+                    <h1>...</h1>
                 </div>
-            </fieldset>
-        </div>
-        <div class="col-6 text-center">
-            <fieldset>
-                <legend>Delete Item</legend>
-                <input id = "deleteItem" type="text" placeholder="Delete Item">
-                <button id="btnDelete" class="btn btn-primary">Delete</button>
-            </fieldset>
-            <div id="deleteAlert" class="alert alert-danger" role="alert">
-                Cannot find the item <span id="alertDeleteItem"></span>
-            </div>
-            <div id="test">
-
             </div>
         </div>
-    </div>
-    <div id="storageAlert" class="alert alert-danger" role="alert">
-        Sorry! No Web Storage support...
+        <div class="text-center">
+            <button id="tellMe" class="btn-lg btn btn-primary mb-4">Tell Me!</button>
+        </div>
+        <div class="text-center">
+            <button id="btnSelect" class="btn-lg btn btn-outline-success">Select!</button>
+        </div>
+        <div class="row">
+            <div class="col-6 text-center">
+                <fieldset>
+                    <legend>Add New Item</legend>
+                    <input id = "newItem" type="text"  placeholder="Add Item">
+                    <button id="btnAdd" class="btn btn-primary">Add</button>
+                    <div id="addAlert" class="alert alert-danger mt-4" role="alert">
+                    The item <span id="alertNewItem"></span> already exists in the list.
+                    </div>
+                    <div id="addSuccess" class="alert alert-success mt-4" role="alert">
+                        The item <span id="successNewItem"></span> is added in the list successfully.
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-6 text-center">
+                <fieldset>
+                    <legend>Delete Item</legend>
+                    <input id = "deleteItem" type="text" placeholder="Delete Item">
+                    <button id="btnDelete" class="btn btn-primary">Delete</button>
+                    <div id="deleteAlert" class="alert alert-danger mt-4" role="alert">
+                        Cannot find the item <span id="alertDeleteItem"></span>
+                    </div>
+                    <div id="deleteSuccess" class="alert alert-success mt-4" role="alert">
+                        The item <span id="successDeleteItem"></span> is deleted from the list successfully.
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div id="storageAlert" class="alert alert-danger mt-4" role="alert">
+            Sorry! No Web Storage support...
+        </div>
     </div>
 </body>
 </html>
 
-<script>
-    // dinner array
-    var dinnerArr;
-    if(JSON.parse(localStorage.getItem("dinnerList")) === null){
-        dinnerArr = ["Yakisoba", "ramen", "stuffed pepper", "fish and chips", "cheese fondue", "robster", "quesadilla", "pasta", "pizza", "soup"];
-    }else{
-        dinnerArr = JSON.parse(localStorage.getItem("dinnerList"));
-    }
-    console.log("LocalStorage: " + JSON.parse(localStorage.getItem("dinnerList")));
-    console.log("Loaded: " + dinnerArr);
-
-    $("#deleteAlert").hide();
-    $("#addAlert").hide();
-    $("#storageAlert").hide();
-
-    //select dinner randomly
-    function selectDinner(dinnerArr){
-        // select dinner randomly
-        var randomDinner = dinnerArr[Math.floor((Math.random() * dinnerArr.length))].toString();
-
-        return randomDinner;
-    }
-
-
-    //add new dinner
-    $("#btnAdd").click(function(){
-        var newItem = $("#newItem").val();
-
-        //check if new item already exists in list
-        var i;
-        var isFound = false;
-        for(i = 0; i <= dinnerArr.length; i++){
-            if(dinnerArr[i] == newItem){
-                isFound = true;
-            }
-        }
-        if (isFound == true){
-            $("#alertNewItem").text("\""+newItem +"\" ");
-            $("#addAlert").show();
-            $("#addAlert").delay(4000).fadeOut('slow');
-
-        }
-
-        dinnerArr.push(newItem);
-        $("#newItem").val ("");
-        console.log(dinnerArr);
-
-        //store data on the client
-        if (typeof(Storage) !== "undefined") {
-            localStorage.setItem("dinnerList", JSON.stringify(dinnerArr));
-        } else {
-            $("#storageAlert").show();
-            $("#storageAlert").delay(4000).fadeOut('slow');
-        }
-    });
-
-    //delete existing dinner
-    $("#btnDelete").click(function(){
-        var deleteItem = $("#deleteItem").val();
-
-        var i;
-        var isFound = false;
-        for(i = 0; i <= dinnerArr.length; i++){
-            if(dinnerArr[i] == deleteItem){
-                dinnerArr.splice(i, 1);
-                isFound = true;
-            }
-        }
-        if (isFound == false){
-            $("#alertDeleteItem").text("\""+deleteItem +"\" ");
-//            $("#deleteAlert").text(" Cannot find the item ");
-            $("#deleteAlert").show();
-            $("#deleteAlert").delay(4000).fadeOut('slow');
-
-        }
-
-        $("#deleteItem").val ("");
-        console.log(dinnerArr);
-        //store data on the client
-        if (typeof(Storage) !== "undefined") {
-            localStorage.setItem("dinnerList",JSON.stringify(dinnerArr));
-        } else {
-            $("#storageAlert").show();
-            $("#storageAlert").delay(4000).fadeOut('slow');
-        }
-    });
-
-    //when click tell me button, it shows dinner selected randomly
-    $("#tellMe").click(function(){
-        var dinner = selectDinner(dinnerArr);
-        $("#answer").html("<h1>" + dinner + "</h1>");
-    });
-</script>
+<script src="js/main.js"></script>
