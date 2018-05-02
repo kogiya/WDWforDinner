@@ -14,6 +14,18 @@ console.log("LocalStorage: " + JSON.parse(localStorage.getItem("dinnerList")));
 console.log("Loaded: " + dinnerArr);
 
 
+//selected dinner array
+var selectedDinnerArr;
+if(JSON.parse(localStorage.getItem("7daysDinnerList")) != null){
+    selectedDinnerArr = JSON.parse(localStorage.getItem("7daysDinnerList"));
+}else{
+    selectedDinnerArr = [];
+}
+console.log("7daysDinnerList: " + selectedDinnerArr);
+
+//randomly selected dinner
+var dinnerChoice;
+
 // hide alerts
 $("#addAlert").hide();
 $("#addSuccess").hide();
@@ -120,9 +132,56 @@ $("#btnDelete").click(function(){
 
 //when click tell me button, it shows randomly selected dinner *******************************************************
 $("#tellMe").click(function(){
-    var dinner = selectDinner(dinnerArr);
-    $("#answer").html("<h1>" + dinner + "</h1>");
+    dinnerChoice = selectDinner(dinnerArr);
+    $("#answer").html("<h1>" + dinnerChoice + "</h1>");
 });
 
 
 //when click select button, it stores selected dinner ****************************************************************
+$("#btnSelect").click(function(){
+
+    var dinnerOfToday =  dinnerChoice;
+    var i;
+    var isFound = false;
+
+    if(selectedDinnerArr.length == 0){  //no item in the list
+        selectedDinnerArr.push(dinnerOfToday)
+        console.log(selectedDinnerArr);
+    }else{ //item exists in the list, ask if the user wants to add it
+        for(i = 0; i < selectedDinnerArr.length; i++) {
+            if(selectedDinnerArr[i] == dinnerOfToday){ //selected item is exists in the list
+               var r = confirm("You had \"" + dinnerOfToday + "\" " + (selectedDinnerArr.length - i) + " day(s) ago.\n Are you sure you want it again?");
+                if (r == true) {// if select yes, add the item in the list
+                    selectedDinnerArr.push(dinnerOfToday);
+                    console.log(selectedDinnerArr);
+                    isFound = true;
+                    break;
+                } else { //if select no, back to selection
+                    isFound = true;
+                    break;
+                }
+            }else{
+                isFound = false;
+            }
+        }
+
+        //if no selected item in the list, add the item in the list
+        if(isFound == false){
+        selectedDinnerArr.push(dinnerOfToday);
+        console.log(selectedDinnerArr);
+        }
+    }
+
+    //store only dinners for 7 days
+    if(selectedDinnerArr.length > 6){
+        selectedDinnerArr.shift();
+    }
+
+    //store data on the client
+    if (typeof(Storage) !== "undefined") {
+        localStorage.setItem("7daysDinnerList", JSON.stringify(selectedDinnerArr));
+    } else {
+        $("#storageAlert").show();
+        $("#storageAlert").delay(4000).fadeOut('slow');
+    }
+});
